@@ -10,24 +10,26 @@
 #define CODE_MIN_DIGIT 1
 #define CODE_MAX_DIGIT 6
 
-
-
-
 int randomRange(int min, int max);
 
 int countDigit(int number, int digit);
 
 int generateCode();
 
+void setRandomSeed();
+
+int countHits(int code, int guess);
+
+int countMiss(int code, int guess);
+
 int main()
 {
-    srand(time(NULL));
 
     for (size_t i = 0; i < 10; i++)
     {
-        printf("%d\n",generateCode());
+        printf("%d\n", generateCode());
     }
-    
+
     printf("nice\n");
     return 0;
 }
@@ -78,13 +80,54 @@ int generateCode()
 
     for (int i = 0; i < CODE_LENGTH; i++)
     {
-        do 
+        do
         {
             randValue = randomRange(CODE_MIN_DIGIT, CODE_MAX_DIGIT);
-        } while(countDigit(code, randValue));
+        } while (countDigit(code, randValue));
 
-        code*=DEVIDE_BY_FOR_NEXT_DIGIT;
-        code+=randValue;
+        code *= DEVIDE_BY_FOR_NEXT_DIGIT;
+        code += randValue;
     }
     return code;
+}
+
+/*
+ set the seed to the time value
+ input: none
+ output: none
+*/
+void setRandomSeed()
+{
+    srand(time(NULL));
+}
+
+/*
+ find the count of hits
+ input: code (int); guess (int)
+ output the count of hits (int)
+*/
+int countHits(int code, int guess)
+{
+    int count = 0;
+
+    do
+    {
+        if (code % DEVIDE_BY_FOR_NEXT_DIGIT == guess % DEVIDE_BY_FOR_NEXT_DIGIT)
+        {
+            count++;
+        }
+        code /= DEVIDE_BY_FOR_NEXT_DIGIT;
+        guess /= DEVIDE_BY_FOR_NEXT_DIGIT;
+    } while (guess);
+    return count;
+}
+
+/*
+ find the count of misses
+ input: code (int); guess (int)
+ output the count of misses (int)
+*/
+int countMiss(int code, int guess)
+{
+    int count = 0;
 }
