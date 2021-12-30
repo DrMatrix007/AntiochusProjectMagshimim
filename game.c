@@ -22,6 +22,8 @@ int countHits(int code, int guess);
 
 int countMiss(int code, int guess);
 
+bool checkIfAllAllowedDigitsRepeatAtLeastOnce(int value);
+
 int main()
 {
 
@@ -130,4 +132,51 @@ int countHits(int code, int guess)
 int countMiss(int code, int guess)
 {
     int count = 0;
+    int devideCounterCode = 0;
+    int devideCounterGuess = 0;
+    int devidedGuess = 0;
+    int currentGuessDigit = 0;
+    int currentCodeDigit = 0;
+
+    do
+    {
+        devidedGuess = code;
+        devideCounterGuess = 0;
+        currentCodeDigit = devideCounterCode % DEVIDE_BY_FOR_NEXT_DIGIT;
+        do
+        {
+            currentGuessDigit = devidedGuess % DEVIDE_BY_FOR_NEXT_DIGIT;
+
+            if (devideCounterCode != devideCounterGuess)
+            {
+                count++;
+            }
+
+            devidedGuess /= DEVIDE_BY_FOR_NEXT_DIGIT;
+            devideCounterGuess++;
+        } while (devidedGuess);
+        guess /= DEVIDE_BY_FOR_NEXT_DIGIT;
+        devideCounterCode++;
+
+    } while (guess);
+    return count;
+}
+
+/*
+ checks if every ALLOWED digit repeats once, and returning the answer
+ input: value (int)
+ output: the requested bool (bool)
+*/
+bool checkIfAllAllowedDigitsRepeatAtLeastOnce(int value)
+{
+    int i;
+    bool flag = true;
+    for (i = CODE_MIN_DIGIT; i <= CODE_MAX_DIGIT; i++)
+    {
+        if (countDigit(value, i) > 1)
+        {
+            flag = false;
+        }
+    }
+    return flag;
 }
