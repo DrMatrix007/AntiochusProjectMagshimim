@@ -142,12 +142,12 @@ int countMiss(int code, int guess)
     {
         devidedGuess = code;
         devideCounterGuess = 0;
-        currentCodeDigit = devideCounterCode % DEVIDE_BY_FOR_NEXT_DIGIT;
+        currentCodeDigit = guess % DEVIDE_BY_FOR_NEXT_DIGIT;
         do
         {
             currentGuessDigit = devidedGuess % DEVIDE_BY_FOR_NEXT_DIGIT;
 
-            if (devideCounterCode != devideCounterGuess)
+            if ((devideCounterCode != devideCounterGuess)&&(currentCodeDigit==currentGuessDigit))
             {
                 count++;
             }

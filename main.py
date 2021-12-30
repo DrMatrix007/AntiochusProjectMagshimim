@@ -43,24 +43,27 @@ class GuessLevel(tkinter.Frame):
         self.responseInput = tkinter.Label(self,textvariable=self.responseInputVar)
         self.responseInput.grid(column=1,row=1,sticky="nsew")
 
-        self.submitInputButton = tkinter.Button(self,text="submit",command=self.show_data)
+        self.submitInputButton = tkinter.Button(self,text="submit",command=self.analyze_data)
         self.submitInputButton.grid(column=0,row=2,sticky="nsew")
         
         self.guessText = tkinter.StringVar()
         self.guessText.set("Guess: ")
         self.guessLabel = tkinter.Label(self,textvariable=self.guessText)
         self.guessLabel.grid(column=0,row=3,sticky="nsew")
-    def check_input(self):
-        value = self.inputArea.get()
-        # print(game.checkIfAllAllowedDigitsRepeatAtLeastOnce(int(value)))
-        return bool(re.fullmatch("[1-6]{4}", value)) and value.isdigit() and game.checkIfAllAllowedDigitsRepeatAtLeastOnce(int(value))
+    def check_input(self) -> tuple[bool,int]:
 
-    def show_data(self):
-        isGood = self.check_input()
+        value = self.inputArea.get()
+
+        return (bool(re.fullmatch("[1-6]{4}", value)) and value.isdigit() and game.checkIfAllAllowedDigitsRepeatAtLeastOnce(int(value))),int(value)
+
+    def analyze_data(self):
+        isGood,guess = self.check_input()
         if(isGood):
             self.responseInputVar.set("")
+            self.guessText.set(f"Guess:\nthere are {game.countHits(self.code,guess)} hits;\nthere are {game.countMiss(self.code,guess)} misses")
         else:
             self.responseInputVar.set("You need to write a 4 digit number,\nwith different digits that are 1-6!")
+            self.guessText.set("Guess:")
 
 
 
