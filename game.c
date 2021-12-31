@@ -171,6 +171,7 @@ bool checkIfAllAllowedDigitsRepeatAtLeastOnce(int value)
 {
     int i;
     bool flag = true;
+    
     for (i = CODE_MIN_DIGIT; i <= CODE_MAX_DIGIT; i++)
     {
         if (countDigit(value, i) > 1)

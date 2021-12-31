@@ -8,7 +8,6 @@ game = compile_c_code.compile_c_file("./game.c")
 
 game.checkIfAllAllowedDigitsRepeatAtLeastOnce.restype = c_bool 
 
-
 class GetLevel(tkinter.Frame):
     def __init__(self,master):
         super().__init__(master,padx=20,pady=20)
@@ -26,8 +25,13 @@ class GuessLevel(tkinter.Frame):
     def __init__(self,master,code:int):
         super().__init__(master,padx=20,pady=20,bg="lightblue")
         
+        
         self.grid_rowconfigure(0,weight=1)
-        self.grid_rowconfigure(1,weight=1)
+        self.grid_rowconfigure(2,weight=1)
+        # self.grid_rowconfigure(2,weight=1)
+        self.grid_columnconfigure(0,weight=1)
+        self.grid_columnconfigure(2,weight=1)
+        
 
 
         self.code = code
@@ -50,17 +54,25 @@ class GuessLevel(tkinter.Frame):
         self.guessText.set("Guess: ")
         self.guessLabel = tkinter.Label(self,textvariable=self.guessText)
         self.guessLabel.grid(column=0,row=3,sticky="nsew")
+
+        self.listGuesses = tkinter.Listbox(self)
+        self.listGuesses.grid(column=2,row=0,rowspan=1,columnspan=1,sticky="nsew")
     def check_input(self) -> tuple[bool,int]:
 
         value = self.inputArea.get()
+        if(bool(re.fullmatch("[1-6]{4}", value))):
+            if(game.checkIfAllAllowedDigitsRepeatAtLeastOnce(int(value))):
+                return True,int(value)
 
-        return (bool(re.fullmatch("[1-6]{4}", value)) and value.isdigit() and game.checkIfAllAllowedDigitsRepeatAtLeastOnce(int(value))),int(value)
-
+        return False,0
     def analyze_data(self):
         isGood,guess = self.check_input()
         if(isGood):
+            hits = game.countHits(self.code,guess)
+            misses = game.countMiss(self.code,guess)
             self.responseInputVar.set("")
-            self.guessText.set(f"Guess:\nthere are {game.countHits(self.code,guess)} hits;\nthere are {game.countMiss(self.code,guess)} misses")
+            self.guessText.set(f"Guess:\nthere are {hits} hits;\nthere are {misses} misses")
+            self.listGuesses.insert(self.listGuesses.size(),f"{guess.__str__()}: Hits: {hits}, Misses: {misses}")
         else:
             self.responseInputVar.set("You need to write a 4 digit number,\nwith different digits that are 1-6!")
             self.guessText.set("Guess:")
