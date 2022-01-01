@@ -6,6 +6,9 @@ def compile_c_file(name:str):
     system(f"gcc -shared {name} -o {name}.out")
     return CDLL(f"{name}.out")
 
+def import_c_file(name:str):
+    return CDLL(f"{name}.out")
+
 
 
 
