@@ -7,25 +7,41 @@ import re
 game = compile_c_code.compile_c_file("./game.c")
 
 game.checkIfAllAllowedDigitsRepeatAtLeastOnce.restype = c_bool 
+game.getDoesShowGuessesLeft.restype = c_bool
 
 class GetLevel(tkinter.Frame):
     def __init__(self,master):
         super().__init__(master,padx=20,pady=20)
         
         self.final_code = game.generateCode()
-        self.b = tkinter.Button(self,text="press this",command=self.next)
-        self.b.grid()
-    def next(self):
+        # self.b = tkinter.Button(self,text="press this",command=self.next)
+        # self.b.grid()
+
+        self.easyButton = tkinter.Button(self,text="Easy",padx=10,command=lambda:self.next(1))
+        self.mediumButton = tkinter.Button(self,text="Medium",padx=10,command=lambda:self.next(2))
+        self.hardButton = tkinter.Button(self,text="Hard",padx=10,command=lambda:self.next(3))
+        self.crazyButton = tkinter.Button(self,text="Crazy",padx=10,command=lambda:self.next(4))
+
+        self.easyButton .grid(row=0,column=0)
+        self.mediumButton.grid(row=0,column=1)
+        self.hardButton .grid(row=0,column=2)
+        self.crazyButton .grid(row=0,column=3)
+
+    def next(self,value:int):
         self.destroy()
-        guess = GuessLevel(self.master,game.generateCode())
-        guess.grid(sticky="nsew")
+        GuessLevel(self.master,game.generateCode(),game.getAmountOfGuesses(value),game.getDoesShowGuessesLeft(value),True).grid(sticky="nsew")
+
 
         
 class GuessLevel(tkinter.Frame):
-    def __init__(self,master,code:int):
+    def __init__(self,master,code:int,amountOfGuesses:bool,showGuessesLeft:bool,doesShowCode:bool):
         super().__init__(master,padx=20,pady=20,bg="lightblue")
         
-        
+        self.guessesLeft = amountOfGuesses
+        self.maxGuesses = amountOfGuesses
+        self.showCode = doesShowCode
+        self.showGuessesLeft = showGuessesLeft
+
         self.grid_rowconfigure(0,weight=1)
         self.grid_rowconfigure(2,weight=1)
         # self.grid_rowconfigure(2,weight=1)
@@ -35,8 +51,13 @@ class GuessLevel(tkinter.Frame):
 
 
         self.code = code
-        self.text = tkinter.Label(self,text=f"code is {code}")
-        self.text.grid(sticky="nsew")
+        self.codeText = tkinter.StringVar()
+        
+        self.codeText.set((f"code is {self.code};" if self.showCode else "") + (f"Guesses remain: {self.guessesLeft}" if self.showGuessesLeft else "") )
+
+
+        self.codeLabel = tkinter.Label(self,textvariable=self.codeText)
+        self.codeLabel.grid(sticky="nsew")
         
         
         self.inputArea = tkinter.Entry(self)
@@ -70,14 +91,35 @@ class GuessLevel(tkinter.Frame):
         if(isGood):
             hits = game.countHits(self.code,guess)
             misses = game.countMiss(self.code,guess)
+            self.guessesLeft-=1
+            if(hits == 4):
+                self.next(True)
             self.responseInputVar.set("")
             self.guessText.set(f"Guess:\nthere are {hits} hits;\nthere are {misses} misses")
             self.listGuesses.insert(self.listGuesses.size(),f"{guess.__str__()}: Hits: {hits}, Misses: {misses}")
+            self.codeText.set((f"code is {self.code};" if self.showCode else "") + (f"Guesses remain: {self.guessesLeft}" if self.showGuessesLeft else "") )
+            if(self.guessesLeft<=0):
+                self.next(False)
         else:
             self.responseInputVar.set("You need to write a 4 digit number,\nwith different digits that are 1-6!")
             self.guessText.set("Guess:")
+    def next(self,isSucces:bool):
+        self.destroy()
+        Ending(self.master,self.code,isSucces,self.guessesLeft,self.maxGuesses).grid(sticky="nsew")
 
 
+class Ending(tkinter.Frame):
+    def __init__(self,master,code:int,isSucces:bool,guessesLeft:int,maxGuesses:int):
+        super().__init__(master,padx=20,pady=20)
+
+        self.grid_rowconfigure(0,weight=1)
+        self.grid_columnconfigure(0,weight=1)
+
+        self.text = (f"Well done, you found the code!!!!\nThe code: {code}\nYou found it in {guessesLeft} out of {maxGuesses}!" if isSucces 
+        else f"Oh no, you didn't found the Code!!!\nThe code was {code}\nYou had {maxGuesses} and didn't found it, better luck next time!!!")
+        self.textLabel = tkinter.Label(self,text=self.text)
+
+        self.textLabel.grid(sticky="nsew")
 
 game.setRandomSeed()
 

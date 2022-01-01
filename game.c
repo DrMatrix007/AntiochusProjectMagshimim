@@ -10,6 +10,19 @@
 #define CODE_MIN_DIGIT 1
 #define CODE_MAX_DIGIT 6
 
+#define EASY_TYPE_GUESS_COUNT 20
+#define MEDIUM_TYPE_GUESS_COUNT 15
+#define HARD_TYPE_GUESS_COUNT 10
+#define CRAZY_TYPE_GUESS_COUNT randomRange(5, 25)
+
+enum GuessingType
+{
+    EASY = 1,
+    MEDIUM,
+    HARD,
+    CRAZY
+};
+
 int randomRange(int min, int max);
 
 int countDigit(int number, int digit);
@@ -23,6 +36,10 @@ int countHits(int code, int guess);
 int countMiss(int code, int guess);
 
 bool checkIfAllAllowedDigitsRepeatAtLeastOnce(int value);
+
+int getAmountOfGuesses(enum GuessingType type);
+
+bool getDoesShowGuessesLeft(enum GuessingType type);
 
 int main()
 {
@@ -48,7 +65,7 @@ int randomRange(int min, int max)
 /*
  returns the count of the digit in the number
  if the digit is a number greater than 9 or smaller than 0, it will return 0.
- input: number (int); digit (int) 
+ input: number (int); digit (int)
 */
 int countDigit(int number, int digit)
 {
@@ -147,7 +164,7 @@ int countMiss(int code, int guess)
         {
             currentGuessDigit = devidedGuess % DEVIDE_BY_FOR_NEXT_DIGIT;
 
-            if ((devideCounterCode != devideCounterGuess)&&(currentCodeDigit==currentGuessDigit))
+            if ((devideCounterCode != devideCounterGuess) && (currentCodeDigit == currentGuessDigit))
             {
                 count++;
             }
@@ -171,7 +188,7 @@ bool checkIfAllAllowedDigitsRepeatAtLeastOnce(int value)
 {
     int i;
     bool flag = true;
-    
+
     for (i = CODE_MIN_DIGIT; i <= CODE_MAX_DIGIT; i++)
     {
         if (countDigit(value, i) > 1)
@@ -180,4 +197,46 @@ bool checkIfAllAllowedDigitsRepeatAtLeastOnce(int value)
         }
     }
     return flag;
+}
+
+// gets the amount of guesses by the type
+// input: the type (Guessing type)
+// output: the requested amount
+int getAmountOfGuesses(enum GuessingType type)
+{
+
+    int value = 0;
+
+    switch (type)
+    {
+        case EASY:
+            value = EASY_TYPE_GUESS_COUNT;
+            break;
+        case MEDIUM:
+            value = MEDIUM_TYPE_GUESS_COUNT;
+        case HARD:
+            value = HARD_TYPE_GUESS_COUNT;
+        case CRAZY:
+            value = CRAZY_TYPE_GUESS_COUNT;
+    }
+    return value;
+}
+
+// gets the amount of guesses by the type
+// input: the type (Guessing type)
+// output: the requested amount
+bool getDoesShowGuessesLeft(enum GuessingType type)
+{
+    bool value = false;
+    switch (type)
+    {
+        case CRAZY:
+            value = false;
+            break;
+
+        default:
+            value = true;
+            break;
+    }
+    return value;
 }
