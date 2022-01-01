@@ -9,7 +9,7 @@ import re
 # win32gui.ShowWindow(win32gui.GetForegroundWindow(),win32con.SW_HIDE)
 
 #import the c binaries
-game = compile_c_code.compile_c_file("./game.c")
+game = compile_c_code.compile_or_import_c_file("./game.c")
 
 #setting up the return type of the functions, the defulat is c_int, but if its not, then we get a "garbage" value.
 game.checkIfAllAllowedDigitsRepeatAtLeastOnce.restype = c_bool 
@@ -38,9 +38,8 @@ class GetLevel(tkinter.Frame):
         self.showCodeCheckBox = tkinter.Checkbutton(self,text="show code?",variable=self.showCodeVar,)
 
 
-        self.welcomeLabel = tkinter.Label(self,text = '''The Game Was Created By:\n
+        self.welcomeLabel = tkinter.Label(self,text = '''The Game Was Created By:
 Ofri Haviv also known as DrMatrix in 2022 ©
-
 
 A secret password was chosen to protect the credit card of Pancratius,
 the descendant of Antiochus.
@@ -64,7 +63,7 @@ Pancratius will buy all the gifts for Hanukkah!!!
         self.crazyButton .grid(row=1,column=3)
 
         self.showCodeCheckBox.grid(row=2,columnspan=4,sticky="nsew")
-        
+
         #definitely not a rick roll
         self.definitelyNotARickRollButton = tkinter.Button(self,text="secret feature",command=lambda: system("explorer \"https://www.youtube.com/watch?v=dQw4w9WgXcQ\""))
         self.definitelyNotARickRollButton.grid(row=3,columnspan=4)
@@ -107,6 +106,7 @@ class GuessLevel(tkinter.Frame):
         
         self.inputArea = tkinter.Entry(self)
         self.inputArea.grid(column=0,row=1,sticky="nsew")
+
 
 
         self.responseInputVar = tkinter.StringVar()
