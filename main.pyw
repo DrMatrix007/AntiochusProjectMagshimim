@@ -1,15 +1,14 @@
-from ctypes import c_bool, c_float, c_int
-from typing import Text
+from ctypes import c_bool
 import compile_c_code
 import tkinter
 import re
-import win32gui,win32con
 
-#to hide the console window in production
-win32gui.ShowWindow(win32gui.GetForegroundWindow(),win32con.SW_HIDE)
+
+# #to hide the console window in production
+# win32gui.ShowWindow(win32gui.GetForegroundWindow(),win32con.SW_HIDE)
 
 #import the c binaries
-game = compile_c_code.import_c_file("./game.c")
+game = compile_c_code.compile_c_file("./game.c")
 
 #setting up the return type of the functions, the defulat is c_int, but if its not, then we get a "garbage" value.
 game.checkIfAllAllowedDigitsRepeatAtLeastOnce.restype = c_bool 
@@ -38,21 +37,24 @@ class GetLevel(tkinter.Frame):
         self.showCodeCheckBox = tkinter.Checkbutton(self,text="show code?",variable=self.showCodeVar,)
 
 
-        self.welcomeLabel = tkinter.Label(self,text = '''
-        A secret password was chosen to protect the credit card of Pancratius,
-        the descendant of Antiochus.
-        Your mission is to stop Pancratius by revealing his secret password.
+        self.welcomeLabel = tkinter.Label(self,text = '''The Game Was Created By:\n
+Ofri Haviv also known as DrMatrix in 2022 ©
 
-        The rules are as follows:
-        1. In each round you try to guess the secret password (4 distinct digits)
-        2. After every guess you'll receive two hints about the password
-            HITS:   The number of digits in your guess which were exactly right.
-            MISSES: The number of digits in your guess which belongs to
-           the password but were miss-placed.
-        3. If you'll fail to guess the password after a certain number of rounds
-        
-        Pancratius will buy all the gifts for Hanukkah!!!
-        ''',justify="left")
+
+A secret password was chosen to protect the credit card of Pancratius,
+the descendant of Antiochus.
+
+Your mission is to stop Pancratius by revealing his secret password.
+The rules are as follows:
+
+1. In each round you try to guess the secret password (4 distinct digits)
+2. After every guess you'll receive two hints about the password
+    HITS:   The number of digits in your guess which were exactly right.
+    MISSES: The number of digits in your guess which belongs to
+   the password but were miss-placed.
+3. If you'll fail to guess the password after a certain number of rounds 
+Pancratius will buy all the gifts for Hanukkah!!!
+''',justify="left")
 
         self.welcomeLabel.grid(row=0,column=0,columnspan=4)
         self.easyButton .grid(row=1,column=0)
@@ -163,30 +165,36 @@ class Ending(tkinter.Frame):
         else f"Oh no, you didn't found the Code!!!\nThe code was {code}\nYou had {maxGuesses} and didn't found it, better luck next time!!!")
         self.textLabel = tkinter.Label(self,text=self.text)
 
-        self.textLabel.grid(sticky="nsew")
 
         self.listbox = tkinter.Listbox(self)
         for i in guessList:
             self.listbox.insert(self.listbox.size(),i)
-        
+
+        self.returnButton = tkinter.Button(self, text="start again",command=lambda:self.restart_game())
+
+
+        self.textLabel.grid(sticky="nsew")
         self.listbox.grid(column=1,row=0,sticky="nsew")
-
+        self.returnButton.grid(column=0,row=1)
+    def restart_game(self):
+        self.destroy()
+        GetLevel(self.master).grid(sticky="nsew")
         
+if __name__ == "__main__":
+    game.setRandomSeed()
 
-game.setRandomSeed()
+    root = tkinter.Tk()
 
-root = tkinter.Tk()
-
-root.grid_rowconfigure(0, weight=1)
-root.grid_columnconfigure(0, weight=1)
-
-
-frame = GetLevel(root)
-
-frame.grid(sticky="nsew")
+    root.grid_rowconfigure(0, weight=1)
+    root.grid_columnconfigure(0, weight=1)
 
 
+    frame = GetLevel(root)
+
+    frame.grid(sticky="nsew")
 
 
 
-root.mainloop()
+
+
+    root.mainloop()
