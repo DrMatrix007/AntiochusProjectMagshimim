@@ -1,4 +1,5 @@
 from ctypes import c_bool
+from os import system
 import compile_c_code
 import tkinter
 import re
@@ -63,6 +64,10 @@ Pancratius will buy all the gifts for Hanukkah!!!
         self.crazyButton .grid(row=1,column=3)
 
         self.showCodeCheckBox.grid(row=2,columnspan=4,sticky="nsew")
+        
+        #definitely not a rick roll
+        self.definitelyNotARickRollButton = tkinter.Button(self,text="secret feature",command=lambda: system("explorer \"https://www.youtube.com/watch?v=dQw4w9WgXcQ\""))
+        self.definitelyNotARickRollButton.grid(row=3,columnspan=4)
 
     def next(self,value:int):
         #destroy this widget, and adding the next
