@@ -4,7 +4,7 @@ import compile_c_code
 import tkinter
 import re
 
-game = compile_c_code.import_c_file("./game.c")
+game = compile_c_code.compile_c_file("./game.c")
 
 game.checkIfAllAllowedDigitsRepeatAtLeastOnce.restype = c_bool 
 game.getDoesShowGuessesLeft.restype = c_bool
@@ -13,6 +13,12 @@ class GetLevel(tkinter.Frame):
     def __init__(self,master):
         super().__init__(master,padx=20,pady=20)
         
+        self.grid_columnconfigure(0,weight=1)
+        self.grid_columnconfigure(1,weight=1)
+        self.grid_columnconfigure(2,weight=1)
+        self.grid_columnconfigure(3,weight=1)
+
+
         self.final_code = game.generateCode()
         # self.b = tkinter.Button(self,text="press this",command=self.next)
         # self.b.grid()
@@ -24,16 +30,37 @@ class GetLevel(tkinter.Frame):
         
 
         self.showCodeVar = tkinter.BooleanVar()
-        self.showCodeCheckBox = tkinter.Checkbutton(self,text="show code?",variable=self.showCodeVar)
-        self.showCodeCheckBox.grid(row=1,columnspan=4,sticky="nsew")
+        self.showCodeCheckBox = tkinter.Checkbutton(self,text="show code?",variable=self.showCodeVar,)
 
-        self.easyButton .grid(row=0,column=0)
-        self.mediumButton.grid(row=0,column=1)
-        self.hardButton .grid(row=0,column=2)
-        self.crazyButton .grid(row=0,column=3)
+
+        self.welcomeLabel = tkinter.Label(self,text = '''
+        A secret password was chosen to protect the credit card of Pancratius,
+        the descendant of Antiochus.
+        Your mission is to stop Pancratius by revealing his secret password.
+
+        The rules are as follows:
+        1. In each round you try to guess the secret password (4 distinct digits)
+        2. After every guess you'll receive two hints about the password
+            HITS:   The number of digits in your guess which were exactly right.
+            MISSES: The number of digits in your guess which belongs to
+           the password but were miss-placed.
+        3. If you'll fail to guess the password after a certain number of rounds
+        
+        Pancratius will buy all the gifts for Hanukkah!!!
+        ''',justify="left")
+
+        self.welcomeLabel.grid(row=0,column=0,columnspan=4)
+        self.easyButton .grid(row=1,column=0)
+        self.mediumButton.grid(row=1,column=1)
+        self.hardButton .grid(row=1,column=2)
+        self.crazyButton .grid(row=1,column=3)
+
+        self.showCodeCheckBox.grid(row=2,columnspan=4,sticky="nsew")
 
     def next(self,value:int):
         self.destroy()
+        for i in range(1,5):
+            print(game.getAmountOfGuesses(i))
         GuessLevel(self.master,game.generateCode(),game.getAmountOfGuesses(value),game.getDoesShowGuessesLeft(value),self.showCodeVar.get()).grid(sticky="nsew")
 
 
@@ -58,7 +85,7 @@ class GuessLevel(tkinter.Frame):
         self.code = code
         self.codeText = tkinter.StringVar()
         
-        self.codeText.set((f"code is {self.code};" if self.showCode else "") + (f"Guesses remain: {self.guessesLeft}" if self.showGuessesLeft else "") )
+        self.codeText.set((f"code is {self.code}\n" if self.showCode else "") + (f"Guesses remain: {self.guessesLeft}" if self.showGuessesLeft else "") )
 
 
         self.codeLabel = tkinter.Label(self,textvariable=self.codeText)
@@ -101,9 +128,9 @@ class GuessLevel(tkinter.Frame):
             self.guessesLeft-=1
 
             self.responseInputVar.set("")
-            self.guessText.set(f"Guess:\nthere are {hits} hits;\nthere are {misses} misses")
+            self.guessText.set(f"Guess:\nthere are {hits} hits\nthere are {misses} misses")
             self.listGuessesBox.insert(self.listGuessesBox.size(),f"{guess.__str__()}: Hits: {hits}, Misses: {misses}")
-            self.codeText.set((f"code is {self.code};" if self.showCode else "") + (f"Guesses remain: {self.guessesLeft}" if self.showGuessesLeft else "") )
+            self.codeText.set((f"code is {self.code}\n" if self.showCode else "") + (f"Guesses remain: {self.guessesLeft}" if self.showGuessesLeft else "") )
             if(hits == 4):
                 self.next(True)
           

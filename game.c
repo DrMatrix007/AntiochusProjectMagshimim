@@ -214,10 +214,13 @@ int getAmountOfGuesses(enum GuessingType type)
             break;
         case MEDIUM:
             value = MEDIUM_TYPE_GUESS_COUNT;
+            break;
         case HARD:
             value = HARD_TYPE_GUESS_COUNT;
+            break;
         case CRAZY:
             value = CRAZY_TYPE_GUESS_COUNT;
+            break;
     }
     return value;
 }
