@@ -1,28 +1,33 @@
-from ctypes import c_bool, c_float
+from ctypes import c_bool, c_float, c_int
 from typing import Text
 import compile_c_code
 import tkinter
 import re
+import win32gui,win32con
 
-game = compile_c_code.compile_c_file("./game.c")
+#to hide the console window in production
+win32gui.ShowWindow(win32gui.GetForegroundWindow(),win32con.SW_HIDE)
 
+#import the c binaries
+game = compile_c_code.import_c_file("./game.c")
+
+#setting up the return type of the functions, the defulat is c_int, but if its not, then we get a "garbage" value.
 game.checkIfAllAllowedDigitsRepeatAtLeastOnce.restype = c_bool 
 game.getDoesShowGuessesLeft.restype = c_bool
 
 class GetLevel(tkinter.Frame):
     def __init__(self,master):
         super().__init__(master,padx=20,pady=20)
-        
+        #set the layout
         self.grid_columnconfigure(0,weight=1)
         self.grid_columnconfigure(1,weight=1)
         self.grid_columnconfigure(2,weight=1)
         self.grid_columnconfigure(3,weight=1)
 
-
+        #create the code
         self.final_code = game.generateCode()
-        # self.b = tkinter.Button(self,text="press this",command=self.next)
-        # self.b.grid()
-
+        
+        #the widgets
         self.easyButton = tkinter.Button(self,text="Easy",padx=10,command=lambda:self.next(1))
         self.mediumButton = tkinter.Button(self,text="Medium",padx=10,command=lambda:self.next(2))
         self.hardButton = tkinter.Button(self,text="Hard",padx=10,command=lambda:self.next(3))
@@ -58,17 +63,19 @@ class GetLevel(tkinter.Frame):
         self.showCodeCheckBox.grid(row=2,columnspan=4,sticky="nsew")
 
     def next(self,value:int):
+        #destroy this widget, and adding the next
         self.destroy()
         for i in range(1,5):
             print(game.getAmountOfGuesses(i))
         GuessLevel(self.master,game.generateCode(),game.getAmountOfGuesses(value),game.getDoesShowGuessesLeft(value),self.showCodeVar.get()).grid(sticky="nsew")
 
-
-        
 class GuessLevel(tkinter.Frame):
     def __init__(self,master,code:int,amountOfGuesses:bool,showGuessesLeft:bool,doesShowCode:bool):
         super().__init__(master,padx=20,pady=20,bg="lightblue")
-        
+
+
+        #setting up the ui, with the correct functions
+
         self.guessesLeft = amountOfGuesses
         self.maxGuesses = amountOfGuesses
         self.showCode = doesShowCode
@@ -76,7 +83,6 @@ class GuessLevel(tkinter.Frame):
 
         self.grid_rowconfigure(0,weight=1)
         self.grid_rowconfigure(2,weight=1)
-        # self.grid_rowconfigure(2,weight=1)
         self.grid_columnconfigure(0,weight=1)
         self.grid_columnconfigure(2,weight=1)
         
@@ -113,7 +119,7 @@ class GuessLevel(tkinter.Frame):
         self.listGuessesBox = tkinter.Listbox(self,listvariable=self.listGuesses)
         self.listGuessesBox.grid(column=2,row=0,rowspan=1,columnspan=1,sticky="nsew")
     def check_input(self) -> tuple[bool,int]:
-
+        #checking for the input for validation
         value = self.inputArea.get()
         if(bool(re.fullmatch("[1-6]{4}", value))):
             if(game.checkIfAllAllowedDigitsRepeatAtLeastOnce(int(value))):
@@ -123,6 +129,7 @@ class GuessLevel(tkinter.Frame):
     def analyze_data(self):
         isGood,guess = self.check_input()
         if(isGood):
+            #if the input good
             hits = game.countHits(self.code,guess)
             misses = game.countMiss(self.code,guess)
             self.guessesLeft-=1
@@ -137,6 +144,7 @@ class GuessLevel(tkinter.Frame):
             if(self.guessesLeft<=0):
                 self.next(False)
         else:
+            #if the input ins't valid
             self.responseInputVar.set("You need to write a 4 digit number,\nwith different digits that are 1-6!")
             self.guessText.set("Guess:")
     def next(self,isSucces:bool):
@@ -147,7 +155,7 @@ class GuessLevel(tkinter.Frame):
 class Ending(tkinter.Frame):
     def __init__(self,master,code:int,isSucces:bool,guessesLeft:int,maxGuesses:int,guessList:list):
         super().__init__(master,padx=20,pady=20)
-
+        #show the user the code, and extra info about this game.
         self.grid_rowconfigure(0,weight=1)
         self.grid_columnconfigure(0,weight=1)
 
@@ -160,7 +168,7 @@ class Ending(tkinter.Frame):
         self.listbox = tkinter.Listbox(self)
         for i in guessList:
             self.listbox.insert(self.listbox.size(),i)
-
+        
         self.listbox.grid(column=1,row=0,sticky="nsew")
 
         
