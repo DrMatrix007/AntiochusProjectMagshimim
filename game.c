@@ -44,12 +44,8 @@ bool getDoesShowGuessesLeft(enum GuessingType type);
 int main()
 {
 
-    for (size_t i = 0; i < 10; i++)
-    {
-        printf("%d\n", generateCode());
-    }
-
-    printf("nice\n");
+    printf("you shouldn't run this");
+    system("PAUSE");
     return 0;
 }
 /*
